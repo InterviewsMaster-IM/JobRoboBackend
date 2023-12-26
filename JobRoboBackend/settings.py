@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-8=!ds1)(^$*jw645^#j!l+^crzgr-tnn4@oflf(j48u^l@oelz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1","localhost"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     # Our apps
     "authentication",
     "resumes",
+    "referrals",
 ]
 
 MIDDLEWARE = [
@@ -161,7 +162,6 @@ AWS_S3_REGION_NAME = 'ap-south-1'  # e.g., us-east-1
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
 
-
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
@@ -176,7 +176,6 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-
 
 
 # CORS (for development only)
