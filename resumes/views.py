@@ -11,9 +11,10 @@ from .aiparser import parse_resume_save_in_db_task
 from celery.result import AsyncResult
 from django.http import JsonResponse
 
+
 @api_view(['POST'])
 def resume_upload(request):
-    #Validate the necessary fields
+    # Validate the necessary fields
     file = request.data.get('file')
     if not file:
         return Response({'error': 'File is required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -27,6 +28,7 @@ def resume_upload(request):
     # Serialize the resume after saving
     resume_serializer = ResumeSerializer(resume)
     return JsonResponse(resume_serializer.data, status=status.HTTP_201_CREATED)
+
 
 @api_view(['POST'])
 def start_parse_resume_task(request):

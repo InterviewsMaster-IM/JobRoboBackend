@@ -1,5 +1,4 @@
 from langchain.document_loaders import Docx2txtLoader
-
 from .base_service import ChatService
 
 
