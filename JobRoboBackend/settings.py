@@ -170,6 +170,7 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 OPEN_AI_KEY = os.environ.get('OPEN_AI_KEY')
 OPEN_AI_MODEL = 'gpt-3.5-turbo-1106'
 
+
 # Job scheduling settings
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
@@ -187,3 +188,14 @@ CORS_ALLOW_ALL_ORIGINS = True
 #    ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+
+# For VectorDB and Langchains
+TEMP_DIR = BASE_DIR / 'temp'
+os.makedirs(TEMP_DIR, exist_ok=True)
+
+DATASET_DIR = TEMP_DIR/'dataset'
+os.makedirs(DATASET_DIR, exist_ok=True)
+
+CHROMA_DIR = TEMP_DIR/'chroma_storage'
+os.makedirs(CHROMA_DIR, exist_ok=True)
