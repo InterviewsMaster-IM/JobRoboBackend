@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "authentication",
     "resumes",
     "referrals",
+    "credits",
 ]
 
 MIDDLEWARE = [

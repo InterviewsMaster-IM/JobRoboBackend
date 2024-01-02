@@ -22,5 +22,5 @@ urlpatterns = [
     path('authentication/', include('authentication.urls')),
     path('api/resumes/', include('resumes.urls')),
     path('api/referrals/', include('referrals.urls')),
-
+    path('api/credits/', include('credits.urls')),
 ]
