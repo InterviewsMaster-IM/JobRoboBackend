@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "resumes",
     "referrals",
     "credits",
+    "profiles"
 ]
 
 MIDDLEWARE = [
