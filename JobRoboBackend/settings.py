@@ -182,6 +182,7 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 OPEN_AI_KEY = os.environ.get('OPEN_AI_KEY')
 OPEN_AI_MODEL = 'gpt-4'
 
+os.environ["OPENAI_API_KEY"] = OPEN_AI_KEY
 
 # Job scheduling settings
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
