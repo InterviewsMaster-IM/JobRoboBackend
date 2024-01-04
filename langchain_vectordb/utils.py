@@ -1,3 +1,7 @@
+import json
+from django.core.files import File
+from io import BytesIO
+import boto3
 import os
 import shutil
 import urllib
@@ -5,73 +9,77 @@ import uuid
 from django.conf import settings
 from .core.doc_service import DocService
 from .core.pdf_service import PDFService
+import pickle
 
 
-def start_testing():
-    """ for testing prompts """
+def create_chat_model_for_resume(resume):
     HOME = settings.TEMP_DIR
-
     uuid_memory = str(uuid.uuid4())
+
+    # Create temp_save_directory if it does not exist
     temp_save_directory = os.path.join(HOME, 'dataset')
-
-    filename = "test.docx"  # add the file name here
-    data_path = os.path.join(temp_save_directory, filename)
-
-    cht_mdl = DocService(data_path, persist_directory=os.path.join(
-        HOME, "chroma_storage", uuid_memory))
-    cht_mdl.fetch_document()
-    cht_mdl.create_vector_index()
-
-    while True:
-        query = input("input the text here: ")
-        output = cht_mdl.query_document(prompt=query)
-        print(output)
-
-
-def resume_queries(resume, queries):
-    """ given a resume, takes queries and returns responses"""
-
-    prompt = """
-    Assume the role of a user who is applying for a job, and respond to questions on a job application form.
-    You are provided with the user's personal and professional information in the context.
-    Answer every question/query as if you are filling an online form with concise and accurately formatted responses as if you were completing an online form.
-    
-    Give your response in the following format:
-    {'form':[{'html_element':<html element>.'response' : <data to enter in the element>}]}
-    """
-
-    HOME = settings.TEMP_DIR
-
-    uuid_memory = str(uuid.uuid4())
-    temp_save_directory = os.path.join(HOME, 'dataset')
+    if not os.path.exists(temp_save_directory):
+        os.makedirs(temp_save_directory)
 
     # Download resume file from AWS bucket and save in temp_file
     resume_file = resume.file
-    unique_filename = str(uuid.uuid4())+resume.file.name.split('.')[-1]
-    temp_file_path = os.path.join(temp_save_directory, unique_filename)
+    unique_filename = str(uuid.uuid4()) + '.' + resume.file.name.split('.')[-1]
+    temp_file_path = os.path.join(
+        temp_save_directory, unique_filename)  # Local temp path
 
     with open(temp_file_path, 'wb') as f:
         resume_file.open('rb')
         shutil.copyfileobj(resume_file, f)
         resume_file.close()
 
-    if (resume_file.name.endswith('pdf')):
-        cht_mdl = PDFService(temp_file_path, persist_directory=os.path.join(
-            HOME, "chroma_storage", uuid_memory))
-    else:
+    # Initialize PDFService with the local file path
+    persist_directory = os.path.join(HOME, "chroma_storage", uuid_memory)
+    # Create persist_directory if it does not exist
+    if not os.path.exists(persist_directory):
+        os.makedirs(persist_directory)
 
-        cht_mdl = DocService(temp_file_path, persist_directory=os.path.join(
-            HOME, "chroma_storage", uuid_memory))
+    cht_mdl = PDFService(temp_file_path, persist_directory=persist_directory)
 
+    # Fetch document and create vector index
     cht_mdl.fetch_document()
     cht_mdl.create_vector_index()
 
-    responses = []
-    for query in queries:
-        output = cht_mdl.query_document(prompt=prompt+query)
-        responses.append(
-            {"query": query, "response": output})
+    cht_mdl_bytes = pickle.dumps(cht_mdl)
+    cht_mdl_pkl_in_memory = BytesIO(cht_mdl_bytes)
+    cht_mdl_file = File(cht_mdl_pkl_in_memory, name="cht_mdl.pkl")
+    resume.chat_model = cht_mdl_file
+    resume.save()
+    cht_mdl_pkl_in_memory.close()
 
-    # Clean up the temporary file
+    # Clean up the temporary file and chroma_storage directory
     os.remove(temp_file_path)
-    return responses
+
+
+def get_chat_model_from_resume(resume):
+
+    if resume.chat_model:
+        with resume.chat_model.open('rb') as file:
+            chat_model_bytes = file.read()
+            chat_model = pickle.loads(chat_model_bytes)
+            return chat_model
+    else:
+        return None
+
+
+def resume_query(resume, query):
+    prompt = """
+    Assume the role of a user who is applying for a job, and respond to questions on a job application form.
+    You are provided with the user's personal and professional information in the context.
+    Answer every question/query as if you are filling an online form with concise and accurately formatted responses as if you were completing an online form.
+    
+    Give your response in the following format which should be parsed by python:
+    {"form":[{"html_element":<html element with attributes>."response" : <value to enter in the element>}]}
+    """
+    if (resume.chat_model == ""):
+        create_chat_model_for_resume(resume)
+
+    cht_mdl = get_chat_model_from_resume(resume)
+
+    output = cht_mdl.query_document(prompt=prompt+query)
+    response = json.loads(output)
+    return response

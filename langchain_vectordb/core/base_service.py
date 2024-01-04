@@ -9,8 +9,6 @@ from langchain.chains import RetrievalQA
 from dotenv import load_dotenv
 from django.conf import settings
 
-os.environ["OPENAI_API_KEY"] = settings.OPEN_AI_KEY
-
 
 class ChatService:
 
