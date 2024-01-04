@@ -30,6 +30,16 @@ def start_testing():
 
 def resume_queries(resume, queries):
     """ given a resume, takes queries and returns responses"""
+
+    prompt = """
+    Assume the role of a user who is applying for a job, and respond to questions on a job application form.
+    You are provided with the user's personal and professional information in the context.
+    Answer every question/query as if you are filling an online form with concise and accurately formatted responses as if you were completing an online form.
+    
+    Give your response in the following format:
+    {'form':[{'html_element':<html element>.'response' : <data to enter in the element>}]}
+    """
+
     HOME = settings.TEMP_DIR
 
     uuid_memory = str(uuid.uuid4())
@@ -58,8 +68,9 @@ def resume_queries(resume, queries):
 
     responses = []
     for query in queries:
-        output = cht_mdl.query_document(prompt=query)
-        responses.append({"query": query, "response": output})
+        output = cht_mdl.query_document(prompt=prompt+query)
+        responses.append(
+            {"query": query, "response": output})
 
     # Clean up the temporary file
     os.remove(temp_file_path)

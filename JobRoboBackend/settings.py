@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
     "resumes",
     "referrals",
     "credits",
+    "profiles"
 ]
 
 MIDDLEWARE = [
@@ -153,6 +155,13 @@ REST_FRAMEWORK = {
     ),
 }
 
+
+# LIFETIME
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=500),  # Increase as needed
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1000),  # Increase as needed
+}
+
 # FrontEnd Settings
 TOKEN_HANDLER_URL = "http://localhost:3000/token-handler"
 
@@ -171,7 +180,7 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # OPEN API settings
 OPEN_AI_KEY = os.environ.get('OPEN_AI_KEY')
-OPEN_AI_MODEL = 'gpt-3.5-turbo-1106'
+OPEN_AI_MODEL = 'gpt-4'
 
 
 # Job scheduling settings
