@@ -31,6 +31,7 @@ class Resume(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     file = models.FileField(upload_to=path_and_rename_resume)
+    filename = models.TextField(blank=True)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
     chat_model = models.FileField(
@@ -44,6 +45,7 @@ class CoverLetter(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     file = models.FileField(upload_to=path_and_rename_coverletter)
+    filename = models.TextField(blank=True)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
     chat_model = models.FileField(

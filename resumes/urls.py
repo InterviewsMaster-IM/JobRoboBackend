@@ -1,7 +1,7 @@
 # resumes/urls.py
 
 from django.urls import path
-from .views import resume_upload, coverletter_upload, start_parse_resume_task, check_parse_resume_task_status, resume_query_view, delete_resume, delete_coverletter
+from .views import *
 
 urlpatterns = [
     path('upload/', resume_upload, name='file-upload'),
@@ -14,4 +14,6 @@ urlpatterns = [
     path('delete/<int:resume_id>/', delete_resume, name='delete-resume'),
     path('coverletter/delete/<int:coverletter_id>/',
          delete_coverletter, name='delete-coverletter'),
+
+    path('uploads/', get_uploads, name='get-uploads'),
 ]

@@ -30,6 +30,7 @@ def resume_upload(request):
         return Response({'error': 'File size must be less than 5MB'}, status=status.HTTP_400_BAD_REQUEST)
 
     resume = Resume(file=file)
+    resume.filename = file_name
     resume.submitted_at = timezone.now()
     resume.user = request.user  # Assuming you have a user field and the user is logged in
     # ... set other fields as needed
@@ -57,6 +58,7 @@ def coverletter_upload(request):
         return Response({'error': 'File size must be less than 5MB'}, status=status.HTTP_400_BAD_REQUEST)
 
     coverletter = CoverLetter(file=file)
+    coverletter.filename = file_name
     coverletter.submitted_at = timezone.now()
     # Assuming you have a user field and the user is logged in
     coverletter.user = request.user
@@ -87,6 +89,24 @@ def delete_coverletter(request, coverletter_id):
         return Response({'message': 'Cover letter deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
     except CoverLetter.DoesNotExist:
         return Response({'error': 'Cover letter not found or not owned by user'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def get_uploads(request):
+    try:
+        resume = Resume.objects.filter(
+            user=request.user).order_by('-created_time')[0]
+        resume_data = ResumeSerializer(resume).data
+    except IndexError:
+        resume_data = None
+
+    try:
+        coverletter = CoverLetter.objects.filter(
+            user=request.user).order_by('-created_time')[0]
+        coverletter_data = CoverLetterSerializer(coverletter).data
+    except IndexError:
+        coverletter_data = None
+    return Response({'resume': resume_data, 'coverletter': coverletter_data})
 
 
 @api_view(['POST'])
