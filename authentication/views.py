@@ -6,6 +6,8 @@ import requests
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
+from credits.models import CreditPlan, UserCredits
+
 
 def linkedin_login(request):
     params = {
@@ -16,6 +18,7 @@ def linkedin_login(request):
     }
     url = f'{settings.LINKEDIN_AUTHORIZATION_URL}?{urllib.parse.urlencode(params)}'
     return redirect(url)
+
 
 def linkedin_callback(request):
     code = request.GET.get('code')
@@ -36,18 +39,22 @@ def linkedin_callback(request):
     data = data_response.json()
 
     # Create user if user doesn't exist
-    user,created = User.objects.get_or_create(username=data['sub'], defaults={
-        'first_name':data.get('given_name'),
-        'last_name':data.get('family_name')
+    user, created = User.objects.get_or_create(username=data['sub'], defaults={
+        'first_name': data.get('given_name'),
+        'last_name': data.get('family_name')
     })
+
+    # give free credits if created
+    if created:
+        freeplan = CreditPlan.objects.get(id=1)
+        UserCredits.objects.get_or_create(user=user, plan=freeplan)
 
     refresh = RefreshToken.for_user(user)
     tokens = {
         'refresh': str(refresh),
         'access': str(refresh.access_token),
     }
-    
+
     # Redirect to frontend with tokens
     redirect_url = f"{settings.TOKEN_HANDLER_URL}?access={tokens['access']}&refresh={tokens['refresh']}"
     return redirect(redirect_url)
-

@@ -24,6 +24,7 @@ class UserCredits(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
+    plan = models.ForeignKey(CreditPlan, on_delete=models.PROTECT, null=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.date.strftime('%Y-%m-%d %H:%M:%S')}"
