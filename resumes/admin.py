@@ -3,3 +3,4 @@ from .models import *
 
 # Register your models here.
 admin.site.register(Resume)
+admin.site.register(CoverLetter)
