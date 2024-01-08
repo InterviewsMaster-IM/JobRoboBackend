@@ -20,6 +20,15 @@ def resume_upload(request):
     if not file:
         return Response({'error': 'File is required'}, status=status.HTTP_400_BAD_REQUEST)
 
+    # Check if the file is in the allowed format (pdf, docx, txt)
+    file_name = file.name.lower()
+    if not (file_name.endswith('.pdf') or file_name.endswith('.docx') or file_name.endswith('.txt')):
+        return Response({'error': 'File must be a PDF, DOCX, or TXT format'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check for file size less than 5MB
+    if file.size > 5 * 1024 * 1024:
+        return Response({'error': 'File size must be less than 5MB'}, status=status.HTTP_400_BAD_REQUEST)
+
     resume = Resume(file=file)
     resume.submitted_at = timezone.now()
     resume.user = request.user  # Assuming you have a user field and the user is logged in
@@ -29,6 +38,16 @@ def resume_upload(request):
     # Serialize the resume after saving
     resume_serializer = ResumeSerializer(resume)
     return JsonResponse(resume_serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['DELETE'])
+def delete_resume(request, resume_id):
+    try:
+        resume = Resume.objects.get(id=resume_id, user=request.user)
+        resume.delete()
+        return Response({'message': 'Resume deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    except Resume.DoesNotExist:
+        return Response({'error': 'Resume not found or not owned by user'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
