@@ -72,8 +72,8 @@ def resume_query(resume, query):
     You are provided with the user's personal and professional information in the context.
     Answer every question/query as if you are filling an online form with concise and accurately formatted responses as if you were completing an online form.
     
-    Give your response in the following format which should be parsed by python:
-    {"form":[{"html_element":<html element with attributes>."response" : <value to enter in the element>}]}
+    Give your response strictly in this format:
+    {"response":[{"selector":<selector for html element with attributes>."response" : <value to enter or action to do in the html element>}]}
     """
     if (resume.chat_model == ""):
         create_chat_model_for_resume(resume)
