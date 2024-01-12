@@ -53,3 +53,12 @@ class CoverLetter(models.Model):
 
     def __str__(self):
         return f"Coverletter {self.id} of user {self.user_id}"
+
+
+class OnboardingDetails(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+    data = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"Onboarding Details {self.id} of user {self.user_id}"

@@ -4,13 +4,14 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from .models import Resume, CoverLetter
+from .models import Resume, CoverLetter, OnboardingDetails
 from .serializers import ResumeSerializer, CoverLetterSerializer
 from rest_framework.decorators import api_view
 from .aiparser import parse_resume_save_in_db_task
 from celery.result import AsyncResult
 from django.http import JsonResponse
 from langchain_vectordb.utils import resume_query
+import json
 
 
 @api_view(['POST'])
@@ -39,6 +40,16 @@ def resume_upload(request):
     # Serialize the resume after saving
     resume_serializer = ResumeSerializer(resume)
     return JsonResponse(resume_serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+def onboarding_details(request):
+    user = request.user
+    data = json.dumps(request.data)
+    obd, created = OnboardingDetails.objects.get_or_create(user=user)
+    obd.data = data
+    obd.save()
+    return JsonResponse({"message": "successful"}, status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])

@@ -5,6 +5,7 @@ from .views import *
 
 urlpatterns = [
     path('upload/', resume_upload, name='file-upload'),
+    path('onboarding-details/', onboarding_details, name='onboarding_details'),
     path('coverletter/upload/', coverletter_upload, name='coverletter-upload'),
     path('start-task/', start_parse_resume_task,
          name='start-parse-resume-task'),
