@@ -71,6 +71,9 @@ def coverletter_upload(request):
     if file.size > 5 * 1024 * 1024:
         return Response({'error': 'File size must be less than 5MB'}, status=status.HTTP_400_BAD_REQUEST)
 
+        # coverletter remove
+    CoverLetter.objects.filter(user=request.user).all().delete()
+
     coverletter = CoverLetter(file=file)
     coverletter.filename = file_name
     coverletter.submitted_at = timezone.now()
@@ -78,9 +81,6 @@ def coverletter_upload(request):
     coverletter.user = request.user
     # ... set other fields as needed
     coverletter.save()
-
-    # coverletter remove
-    CoverLetter.objects.filter(user=request.user).all().delete()
 
     # Serialize the cover letter after saving
     coverletter_serializer = CoverLetterSerializer(coverletter)
