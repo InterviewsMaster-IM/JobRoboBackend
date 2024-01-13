@@ -55,6 +55,16 @@ def onboarding_details(request):
     return JsonResponse({"message": "successful"}, status=status.HTTP_201_CREATED)
 
 
+@api_view(['GET'])
+def get_onboarding_details(request):
+    user = request.user
+    try:
+        obd = OnboardingDetails.objects.get(user=user)
+        return JsonResponse(json.loads(obd.data), safe=False, status=status.HTTP_200_OK)
+    except OnboardingDetails.DoesNotExist:
+        return Response({'error': 'Onboarding details not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
 @api_view(['POST'])
 def coverletter_upload(request):
     # Validate the necessary fields
