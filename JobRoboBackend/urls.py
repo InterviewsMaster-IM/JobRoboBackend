@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/referrals/', include('referrals.urls')),
     path('api/credits/', include('credits.urls')),
     path('api/profiles/', include('profiles.urls')),
+    path('api/campaigns/', include('campaigns.urls')),
 ]
 
 schema_view = get_schema_view(
