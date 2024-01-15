@@ -4,6 +4,7 @@ from rest_framework import status
 from .models import Campaign
 from resumes.models import Resume
 import uuid
+from django.shortcuts import get_object_or_404
 
 
 @api_view(['POST'])
@@ -55,7 +56,7 @@ def update_campaign(request):
     try:
         # Retrieve the campaign by ID
         campaign_id = data.get('campaignId')
-        campaign = Campaign.objects.get_object_or_404(Campaign, id=campaign_id)
+        campaign = get_object_or_404(Campaign, id=campaign_id)
 
         # Update the jobs_applied field
         campaign.jobs_applied += data.get('jobsApplied', campaign.jobs_applied)
