@@ -55,7 +55,7 @@ def update_campaign(request):
     try:
         # Retrieve the campaign by ID
         campaign_id = data.get('campaignId')
-        campaign = get_object_or_404(Campaign, id=campaign_id)
+        campaign = Campaign.objects.get_object_or_404(Campaign, id=campaign_id)
 
         # Update the jobs_applied field
         campaign.jobs_applied += data.get('jobsApplied', campaign.jobs_applied)
