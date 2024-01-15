@@ -2,6 +2,8 @@ from django.db import models
 import uuid
 from django.conf import settings
 from resumes.models import Resume
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 
 class Campaign(models.Model):
@@ -43,3 +45,23 @@ class ScrapedJob(models.Model):
 
     def __str__(self):
         return f"{self.job_title} - {self.company_name}"
+
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        super().save(*args, **kwargs)
+        if is_new:
+            self.campaign.jobs_applied = ScrapedJob.objects.filter(
+                campaign=self.campaign).count()
+            self.campaign.save()
+
+
+@receiver(post_delete, sender=ScrapedJob)
+def update_jobs_applied_on_delete(sender, instance, **kwargs):
+    campaign = instance.campaign
+    campaign.jobs_applied = ScrapedJob.objects.filter(
+        campaign=campaign).count()
+    campaign.save()
+
+
+# Connect the signal
+post_delete.connect(update_jobs_applied_on_delete, sender=ScrapedJob)

@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework import status
-from .models import Campaign
+from .models import Campaign, ScrapedJob
 from resumes.models import Resume
 import uuid
 from django.shortcuts import get_object_or_404
@@ -58,10 +58,6 @@ def update_campaign(request):
         campaign_id = data.get('campaignId')
         campaign = get_object_or_404(Campaign, id=campaign_id)
 
-        # Update the jobs_applied field
-        campaign.jobs_applied += data.get('jobsApplied', campaign.jobs_applied)
-        campaign.save()
-
         # Update or create scraped jobs
         for job_data in data.get('scrapedJobs', []):
             ScrapedJob.objects.update_or_create(
@@ -86,6 +82,10 @@ def update_campaign(request):
                     'date_posted': job_data.get('datePosted')
                 }
             )
+
+        # Update the jobs_applied field
+        # campaign.jobs_applied += data.get('jobsApplied', campaign.jobs_applied)
+        campaign.save()
 
         # Return a success response
         return JsonResponse({'message': 'Campaign updated successfully'}, status=status.HTTP_200_OK)
