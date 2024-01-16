@@ -146,6 +146,7 @@ def check_parse_resume_task_status(request, task_id):
 def resume_query_view(request):
     resume_id = request.data.get('resume_id')
     query = request.data.get('query')
+    # print(query)
     if not resume_id or not query:
         return Response({'error': 'Resume ID and query are required'}, status=status.HTTP_400_BAD_REQUEST)
     try:

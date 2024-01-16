@@ -1,3 +1,5 @@
+import re
+from .html import clean_html
 import json
 from django.core.files import File
 from io import BytesIO
@@ -66,6 +68,13 @@ def get_chat_model_from_resume(resume):
         return None
 
 
+def extract_json_substring(text):
+    # This regex looks for a pattern where ```json is followed by any characters (non-greedy)
+    # until ``` is found
+    matches = re.findall(r'```json(.*?)```', text, re.DOTALL)
+    return matches  # Returns a list of all captured groups
+
+
 def resume_query(resume, query):
     prompt = """
     Assume the role of a user who is applying for a job, and respond to questions on a job application form.
@@ -75,11 +84,15 @@ def resume_query(resume, query):
     Give your response strictly in this format:
     {"response":[{"selector":<selector for html element with attributes>."response" : <value to enter or action to do in the html element>}]}
     """
+    cleaned_query = clean_html(query)
+    print(cleaned_query)
     if (resume.chat_model == ""):
         create_chat_model_for_resume(resume)
 
     cht_mdl = get_chat_model_from_resume(resume)
 
-    output = cht_mdl.query_document(prompt=prompt+query)
-    response = json.loads(output)
+    output = cht_mdl.query_document(prompt=prompt+cleaned_query)
+    print(output)
+    response = json.loads(extract_json_substring(output)[0])
+    print(response)
     return response
