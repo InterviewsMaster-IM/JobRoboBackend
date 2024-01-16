@@ -57,7 +57,7 @@ def onboarding_details(request):
     elif request.method == 'GET':
         user = request.user
         obd, created = OnboardingDetails.objects.get_or_create(user=user)
-        return JsonResponse(obd.data, status=status.HTTP_200_OK)
+        return JsonResponse(json.loads(obd.data), status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
