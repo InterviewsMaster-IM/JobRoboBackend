@@ -122,12 +122,17 @@ class Education(models.Model):
 class PersonalInfo(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=128, blank=True)
+    last_name = models.CharField(max_length=128, blank=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
+    country_code = models.CharField(max_length=3, blank=True)
+    gender = models.CharField(max_length=10, blank=True)
     dob = models.DateField(blank=True, null=True)
     location = models.CharField(max_length=255, blank=True, null=True)
     github = models.URLField(blank=True)
     linkedin = models.URLField(blank=True)
+    portfolio_url = models.URLField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
