@@ -181,7 +181,7 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # OPEN API settings
 OPEN_AI_KEY = os.environ.get('OPEN_AI_KEY')
-OPEN_AI_MODEL = 'gpt-4'
+OPEN_AI_MODEL = 'gpt-4-1106-preview'
 
 os.environ["OPENAI_API_KEY"] = OPEN_AI_KEY
 
