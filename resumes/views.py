@@ -12,6 +12,7 @@ from celery.result import AsyncResult
 from django.http import JsonResponse
 from langchain_vectordb.utils import resume_query
 import json
+from django.shortcuts import get_object_or_404
 
 
 @api_view(['POST'])
@@ -56,7 +57,7 @@ def onboarding_details(request):
         return JsonResponse({"message": "successful"}, status=status.HTTP_201_CREATED)
     elif request.method == 'GET':
         user = request.user
-        obd, created = OnboardingDetails.objects.get_or_create(user=user)
+        obd = get_object_or_404(OnboardingDetails, user=user)
         return JsonResponse(json.loads(obd.data), status=status.HTTP_200_OK)
 
 
