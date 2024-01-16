@@ -45,14 +45,19 @@ def resume_upload(request):
     return JsonResponse(resume_serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 def onboarding_details(request):
-    user = request.user
-    data = json.dumps(request.data)
-    obd, created = OnboardingDetails.objects.get_or_create(user=user)
-    obd.data = data
-    obd.save()
-    return JsonResponse({"message": "successful"}, status=status.HTTP_201_CREATED)
+    if request.method == 'POST':
+        user = request.user
+        data = json.dumps(request.data)
+        obd, created = OnboardingDetails.objects.get_or_create(user=user)
+        obd.data = data
+        obd.save()
+        return JsonResponse({"message": "successful"}, status=status.HTTP_201_CREATED)
+    elif request.method == 'GET':
+        user = request.user
+        obd, created = OnboardingDetails.objects.get_or_create(user=user)
+        return JsonResponse(obd.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
