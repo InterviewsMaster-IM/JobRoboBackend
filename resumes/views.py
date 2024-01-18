@@ -10,7 +10,7 @@ from rest_framework.decorators import api_view
 from .aiparser import parse_resume_save_in_db_task
 from celery.result import AsyncResult
 from django.http import JsonResponse
-from langchain_vectordb.utils import resume_query
+from langchain_vectordb.utils import resume_query, resume_query2
 import json
 from django.shortcuts import get_object_or_404
 
@@ -158,6 +158,21 @@ def resume_query_view(request):
     try:
         resume = Resume.objects.get(id=resume_id)
         response = resume_query(resume, query)
+        return JsonResponse({"response": response}, status=status.HTTP_200_OK)
+    except Resume.DoesNotExist:
+        return Response({'error': 'Resume not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+def resume_query_view2(request):
+    resume_id = request.data.get('resume_id')
+    query = request.data.get('query')
+    # print(query)
+    if not resume_id or not query:
+        return Response({'error': 'Resume ID and query are required'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        resume = Resume.objects.get(id=resume_id)
+        response = resume_query2(resume, query)
         return JsonResponse({"response": response}, status=status.HTTP_200_OK)
     except Resume.DoesNotExist:
         return Response({'error': 'Resume not found'}, status=status.HTTP_404_NOT_FOUND)
