@@ -18,8 +18,9 @@ def skill_list_create_view(request):
         return Response(serializer.data)
     elif request.method == 'POST':
         data = request.data
-        data['user'] = request.user.pk
-        serializer = SkillSerializer(data=data)
+        for item in data:
+            item['user'] = request.user.pk
+        serializer = SkillSerializer(data=data, many=True)
         if serializer.is_valid():
             # remove old skills
             Skill.objects.filter(user=request.user).all().delete()
