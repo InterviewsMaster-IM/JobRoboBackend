@@ -89,7 +89,7 @@ def reduce_tokens(html_string):
             pass
 
     # Return the modified HTML as a string
-    return str(soup)
+    return (str(soup), class_dict, id_dict)
 
 
 def clean_html_2(html_string):

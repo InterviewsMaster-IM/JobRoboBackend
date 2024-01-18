@@ -90,8 +90,9 @@ def resume_query(resume, query):
     
 
     """
+    html, class_dict, id_dict = reduce_tokens(query)
     cleaned_query = clean_html_2(
-        extract_interactive_elements(reduce_tokens(query)))
+        extract_interactive_elements(html))
     print(cleaned_query)
     if (resume.chat_model == ""):
         create_chat_model_for_resume(resume)
@@ -105,6 +106,17 @@ def resume_query(resume, query):
         response = json.loads(output)
     except Exception as e:
         response = json.loads(extract_json_substring(output)[0])
+
+    # Replace ids and classes in the response
+    for item in response.get('responses', []):
+        selector = item.get('selector', '')
+        for original_id, replacement_id in id_dict.items():
+            selector = selector.replace(
+                f'#{original_id}', f'#{replacement_id}')
+        for original_class, replacement_class in class_dict.items():
+            selector = selector.replace(
+                f'.{original_class}', f'.{replacement_class}')
+        item['selector'] = selector
     print(response)
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
