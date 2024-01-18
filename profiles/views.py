@@ -21,6 +21,8 @@ def skill_list_create_view(request):
         data['user'] = request.user.pk
         serializer = SkillSerializer(data=data)
         if serializer.is_valid():
+            # remove old skills
+            Skill.objects.filter(user=request.user).all().delete()
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
