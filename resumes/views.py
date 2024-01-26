@@ -59,8 +59,11 @@ def onboarding_details(request):
         return JsonResponse({"message": "successful"}, status=status.HTTP_201_CREATED)
     elif request.method == 'GET':
         user = request.user
-        obd = get_object_or_404(OnboardingDetails, user=user)
-        return JsonResponse(json.loads(obd.data), status=status.HTTP_200_OK)
+        try:
+            obd = OnboardingDetails.objects.get(user=user)
+            return JsonResponse(json.loads(obd.data), status=status.HTTP_200_OK)
+        except OnboardingDetails.DoesNotExist:
+            return JsonResponse({"error": "Onboarding details not found."}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
