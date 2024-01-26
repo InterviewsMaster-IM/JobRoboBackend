@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from django.shortcuts import render
 from django.utils import timezone
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -13,6 +14,7 @@ from django.http import JsonResponse
 from langchain_vectordb.utils import resume_query, resume_query2
 import json
 from django.shortcuts import get_object_or_404
+from langchain_vectordb.utils import create_chat_model_for_resume, get_chat_model_from_resume
 
 
 @api_view(['POST'])
@@ -166,13 +168,28 @@ def resume_query_view(request):
 @api_view(['POST'])
 def resume_query_view2(request):
     resume_id = request.data.get('resume_id')
-    query = request.data.get('query')
-    # print(query)
-    if not resume_id or not query:
-        return Response({'error': 'Resume ID and query are required'}, status=status.HTTP_400_BAD_REQUEST)
+    queries = request.data.get('queries')
+    # print(request.data)
+    if not resume_id or not queries:
+        return Response({'error': 'Resume ID and queries are required'}, status=status.HTTP_400_BAD_REQUEST)
     try:
         resume = Resume.objects.get(id=resume_id)
-        response = resume_query2(resume, query)
-        return JsonResponse({"response": response}, status=status.HTTP_200_OK)
+        if (resume.chat_model == ""):
+            create_chat_model_for_resume(resume)
+        cht_mdl = get_chat_model_from_resume(resume)
+
+        responses = []
+
+        # Define a function to handle the query and append the response
+        def handle_query(query):
+            response = resume_query2(cht_mdl, query)
+            return {'response': response, 'query': query}
+
+        # Use ThreadPoolExecutor to make the for loop parallel
+        with ThreadPoolExecutor() as executor:
+            results = list(executor.map(handle_query, queries))
+
+        responses.extend(results)
+        return JsonResponse({"responses": responses}, status=status.HTTP_200_OK)
     except Resume.DoesNotExist:
         return Response({'error': 'Resume not found'}, status=status.HTTP_404_NOT_FOUND)
