@@ -1,7 +1,7 @@
 from django.db.models import Sum
 from rest_framework import generics, views, status
 from rest_framework.response import Response
-from .models import CreditPlan, UserCredits
+from .models import CreditPlan, UserCredits, UserCreditUsage
 from .serializers import CreditPlanSerializer, UserCreditsSerializer
 from django.contrib.auth.models import User
 from django.db.models import Case, When, Value, IntegerField
@@ -18,10 +18,16 @@ class CreditPlanListView(generics.ListAPIView):
 class UserCreditsView(views.APIView):
     def get(self, request, *args, **kwargs):
         user_credits = UserCredits.objects.filter(user=request.user)
+        user_credits_usage = UserCreditUsage.objects.filter(user=request.user)
         total_credits = user_credits.aggregate(
             Sum('plan__credits'))['plan__credits__sum'] or 0
+
         credits_by_plan = user_credits.values('plan__name').annotate(
             total=Sum('plan__credits')).order_by('plan')
+
+        credits_usage_by_plan = UserCreditUsage.objects.values('plan__name').annotate(
+            total_credits_used=Sum('credits_used')).order_by('plan')
+
         # get currentplan
         uc = UserCredits.objects.filter(user=request.user).annotate(
             custom_order=Case(
@@ -31,6 +37,7 @@ class UserCreditsView(views.APIView):
                 default=Value(4),
                 output_field=IntegerField(),
             )).order_by('custom_order')
+
         currentplan = None
         if (uc.exists()):
             currentplan = CreditPlanSerializer(uc[0].plan).data
@@ -38,6 +45,7 @@ class UserCreditsView(views.APIView):
         data = {
             'total_credits': total_credits,
             'credits_by_plan': credits_by_plan,
+            'credits_usage_by_plan': credits_usage_by_plan,
             'current_plan': currentplan
         }
 

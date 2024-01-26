@@ -5,6 +5,31 @@ from .models import Campaign, ScrapedJob
 from resumes.models import Resume
 import uuid
 from django.shortcuts import get_object_or_404
+from credits.models import CreditPlan, UserCredits, UserCreditUsage
+from .serializers import *
+
+
+@api_view(['GET'])
+def get_user_campaigns(request):
+    user = request.user
+    if user.is_authenticated:
+        campaigns = Campaign.objects.filter(user=user)
+        serializer = CampaignSerializer(campaigns, many=True)
+        return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
+    else:
+        return JsonResponse({'error': 'User is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['GET'])
+def get_campaign_jobs_applied(request, campaign_id):
+    user = request.user
+    if user.is_authenticated:
+        campaign = get_object_or_404(Campaign, id=campaign_id, user=user)
+        scraped_jobs = campaign.scraped_jobs.all()
+        serializer = ScrapedJobSerializer(scraped_jobs, many=True)
+        return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
+    else:
+        return JsonResponse({'error': 'User is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['POST'])
@@ -54,6 +79,27 @@ def create_campaign(request):
 def update_campaign(request):
     data = request.data
     try:
+
+        # update credits usage
+        # get current plan
+        uc = UserCredits.objects.filter(user=request.user).annotate(
+            custom_order=Case(
+                When(plan__type='PAID', then=Value(1)),
+                When(plan__type='EARNED', then=Value(2)),
+                When(plan__type='FREE', then=Value(3)),
+                default=Value(4),
+                output_field=IntegerField(),
+            )).order_by('custom_order')
+        # update usage of credits
+        currentplan = None
+        if (uc.exists()):
+            currentplan = uc[0].plan
+            ucu = UserCreditUsage(user=request.user, plan=currentplan,
+                                  credits_used=len(data.get('scrapedJobs', [])))
+            ucu.save()
+        else:
+            return JsonResponse({"error": "User doesn't have a valid plan"}, status=status.HTTP_200_OK)
+
         # Retrieve the campaign by ID
         campaign_id = data.get('campaignId')
         campaign = get_object_or_404(Campaign, id=campaign_id)
