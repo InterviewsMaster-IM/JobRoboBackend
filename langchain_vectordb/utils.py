@@ -130,7 +130,7 @@ def resume_query2(cht_mdl, query):
     You are provided with the user's personal and professional information in the context.
     Answer every question/query as if you are filling an online form with concise and accurately formatted responses as if you were completing an online form.
     Give only the required data in json format.
-    {"question":<question>,"answer":<answer to the question>}
+    {"question":<question>,"answer":<answer to the question in required type given in question>}
     Here is the question
     """
 
