@@ -129,12 +129,14 @@ def resume_query2(cht_mdl, query):
     Assume the role of a user who is applying for a job, and respond to questions on a job application form.
     You are provided with the user's personal and professional information in the context.
     Answer every question/query as if you are filling an online form with concise and accurately formatted responses as if you were completing an online form.
-    Give only the required data.
-    
+    Give only the required data in json format.
+    {"question":<question>,"answer":<answer to the question>}
+    Here is the question
     """
 
     start_time = time.time()
-    output = cht_mdl.query_document(prompt=prompt+query+":")
+    output = json.loads(cht_mdl.query_document(
+        prompt=prompt+json.dumps(query)))
     print(output)
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
