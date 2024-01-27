@@ -1,6 +1,4 @@
 import os
-from langchain.document_loaders import TextLoader
-from langchain.document_loaders import PyPDFLoader, Docx2txtLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
 from langchain.embeddings import OpenAIEmbeddings
@@ -8,6 +6,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQA
 from dotenv import load_dotenv
 from django.conf import settings
+from dotenv import load_dotenv
 import time
 
 
@@ -50,4 +49,5 @@ class ChatService:
             print(f"response: {time.time()-st}")
             return llm_response["result"]
         else:
+            return []
             return []

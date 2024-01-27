@@ -135,9 +135,13 @@ def resume_query2(cht_mdl, query):
     """
 
     start_time = time.time()
-    output = json.loads(cht_mdl.query_document(
-        prompt=prompt+json.dumps(query)))
-    print(output)
+    res = cht_mdl.query_document(prompt=prompt+json.dumps(query))
+    try:
+        output = json.loads(res)
+    except Exception as e:
+        output = json.loads(extract_json_substring(res)[0])
+
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
+    print(output)
     return output
