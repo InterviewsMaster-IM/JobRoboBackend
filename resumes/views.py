@@ -170,6 +170,7 @@ def resume_query_view(request):
 
 @api_view(['POST'])
 def resume_query_view2(request):
+    print("resume 2 api started")
     resume_id = request.data.get('resume_id')
     queries = request.data.get('queries')
     # print(request.data)
@@ -177,22 +178,32 @@ def resume_query_view2(request):
         return Response({'error': 'Resume ID and queries are required'}, status=status.HTTP_400_BAD_REQUEST)
     try:
         resume = Resume.objects.get(id=resume_id)
-        if (resume.chat_model == ""):
+        if resume.chat_model == "":
             create_chat_model_for_resume(resume)
         cht_mdl = get_chat_model_from_resume(resume)
 
         responses = []
+        error_response = None
 
         # Define a function to handle the query and append the response
         def handle_query(query):
-            response = resume_query2(cht_mdl, query)
+            nonlocal error_response
+            response, error = resume_query2(cht_mdl, query)
+            if error is not None:
+                # Convert httpx.Response to a Django compatible response
+                error_response = Response(
+                    {'error': error.response.text}, status=error.response.status_code)
+                return None
             return {'response': response, 'query': query}
 
         # Use ThreadPoolExecutor to make the for loop parallel
         with ThreadPoolExecutor() as executor:
             results = list(executor.map(handle_query, queries))
 
-        responses.extend(results)
+        if error_response is not None:
+            return error_response
+
+        responses.extend(filter(None, results))
         return JsonResponse({"responses": responses}, status=status.HTTP_200_OK)
     except Resume.DoesNotExist:
         return Response({'error': 'Resume not found'}, status=status.HTTP_404_NOT_FOUND)
