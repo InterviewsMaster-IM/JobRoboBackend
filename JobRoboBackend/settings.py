@@ -169,8 +169,8 @@ TOKEN_HANDLER_URL = "http://localhost:3000/token-handler"
 
 
 # AWS settings
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_ACCESS_KEY_ID = "AKIATA7KDL3JSJTMXNVS"
+AWS_SECRET_ACCESS_KEY = "rykvC6WEFe4FuYIMjeAm5bZMqS3DzdMnfjENyIRw"
 AWS_STORAGE_BUCKET_NAME = 'jobrobo-django-bucket'
 AWS_S3_REGION_NAME = 'us-east-2'  # e.g., us-east-1
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
@@ -181,10 +181,10 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 
 # OPEN API settings
-OPEN_AI_KEY = os.environ.get('OPEN_AI_KEY')
+OPEN_AI_KEY = "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"
 OPEN_AI_MODEL = 'gpt-4-1106-preview'
 
-os.environ["OPENAI_API_KEY"] = OPEN_AI_KEY
+os.environ["OPENAI_API_KEY"] = "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"
 
 # Job scheduling settings
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
