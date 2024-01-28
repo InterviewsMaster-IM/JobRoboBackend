@@ -1,5 +1,4 @@
-import concurrent.futures
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError
 from django.shortcuts import render
 from django.utils import timezone
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -172,47 +171,49 @@ def resume_query_view(request):
 @api_view(['POST'])
 def resume_query_view2(request):
     print("resume 2 api started")
+
+    # Extracting data from the request
     resume_id = request.data.get('resume_id')
     queries = request.data.get('queries')
-    # print(request.data)
+
+    # Validating the presence of necessary data
     if not resume_id or not queries:
-        return Response({'error': 'Resume ID and queries are required'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Resume ID and queries are required'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
     try:
+        # Fetching the resume object
         resume = Resume.objects.get(id=resume_id)
-        if resume.chat_model == "":
+        if not resume.chat_model:
             create_chat_model_for_resume(resume)
-        cht_mdl = get_chat_model_from_resume(resume)
+        chat_model = get_chat_model_from_resume(resume)
 
         responses = []
         error_response = None
-        timeout = 10  # seconds
 
-        # Define a function to handle the query and append the response
         def handle_query(query):
+            # Function to handle individual queries
             nonlocal error_response
             try:
-                response = resume_query2(cht_mdl, query)
-            except concurrent.futures.TimeoutError as e:
-                error_response = Response(
-                    {'error': 'Query processing timed out'}, status=status.HTTP_504_GATEWAY_TIMEOUT)
-                return None
+                response, error = resume_query2(chat_model, query)
+                if error:
+                    error_response = error
+                    raise Exception(error)
+                return {'response': response, 'query': query}
+            except Exception as e:
+                return {'error': str(e), 'query': query}
 
-            return {'response': response, 'query': query}
-
-        # Use ThreadPoolExecutor to make the for loop parallel
+        # Parallel processing of queries
         with ThreadPoolExecutor() as executor:
-            future_to_query = {executor.submit(
+            futures = {executor.submit(
                 handle_query, query): query for query in queries}
-            for future in concurrent.futures.as_completed(future_to_query):
-                if error_response is not None:
-                    break
-                result = future.result(timeout=timeout)
-                if result is not None:
-                    responses.append(result)
-
-        if error_response is not None:
-            return error_response
-
+            for future in as_completed(futures):
+                result = future.result()  # Apply timeout here if necessary
+                if 'error' in result:
+                    return error_response
+                responses.append(result)
         return JsonResponse({"responses": responses}, status=status.HTTP_200_OK)
+
     except Resume.DoesNotExist:
-        return Response({'error': 'Resume not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'Resume not found'},
+                        status=status.HTTP_404_NOT_FOUND)

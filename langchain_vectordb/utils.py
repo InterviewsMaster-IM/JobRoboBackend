@@ -1,3 +1,6 @@
+from rest_framework import status
+from rest_framework.response import Response
+import threading
 from .html import *
 from .html import extract_interactive_elements
 import time
@@ -123,28 +126,47 @@ def resume_query(resume, query):
     return response
 
 
-def resume_query2(cht_mdl, query):
-    prompt = """
-    They current date is 24th Jan 2024.
-    Assume the role of a user who is applying for a job, and respond to questions on a job application form.
-    You are provided with the user's personal and professional information in the context.
-    Answer every question/query as if you are filling an online form with concise and accurately formatted responses as if you were completing an online form.
-    Give only the required data in json format.
-    {"question":<question>,"answer":<answer to the question in required type given in question>}
-    Here is the question
-    """
+def resume_query2(cht_mdl, query, timeout_seconds=10):
+    class QueryThread(threading.Thread):
+        def __init__(self, cht_mdl, query):
+            threading.Thread.__init__(self)
+            self.cht_mdl = cht_mdl
+            self.query = query
+            self.result = None
+            self.exception = None
 
-    start_time = time.time()
-    try:
-        res = cht_mdl.query_document(prompt=prompt+json.dumps(query))
-    except Exception as e:
-        return None, e
-    try:
-        output = json.loads(res)
-    except Exception as e:
-        output = json.loads(extract_json_substring(res)[0])
+        def run(self):
+            try:
+                prompt = """
+                The current date is 24th Jan 2024.
+                Assume the role of a user who is applying for a job, and respond to questions on a job application form.
+                You are provided with the user's personal and professional information in the context.
+                Answer every question/query as if you are filling an online form with concise and accurately formatted responses as if you were completing an online form.
+                Give only the required data in json format.
+                {"question":<question>,"answer":<answer to the question in required type given in question>}
+                Here is the question
+                """
+                self.result = self.cht_mdl.query_document(
+                    prompt=prompt + json.dumps(self.query))
+            except Exception as e:
+                self.exception = e
 
-    end_time = time.time()
-    print(f"Time taken: {end_time - start_time} seconds")
-    print(output)
+    query_thread = QueryThread(cht_mdl, query)
+    query_thread.start()
+    query_thread.join(timeout=timeout_seconds)
+
+    if query_thread.is_alive():
+        return None, Response({'error': 'Timeout error'}, status=status.HTTP_408_REQUEST_TIMEOUT)
+
+    if query_thread.exception:
+        error = query_thread.exception
+        error_response = Response(
+            {'error': error.response.text}, status=error.response.status_code)
+        return None, error_response
+
+    try:
+        output = json.loads(query_thread.result)
+    except Exception as e:
+        output = json.loads(extract_json_substring(query_thread.result)[0])
+
     return output, None
