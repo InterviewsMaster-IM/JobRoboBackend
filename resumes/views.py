@@ -1,3 +1,4 @@
+import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
 from django.shortcuts import render
 from django.utils import timezone
@@ -184,26 +185,38 @@ def resume_query_view2(request):
 
         responses = []
         error_response = None
+        timeout = 10  # seconds
 
         # Define a function to handle the query and append the response
         def handle_query(query):
             nonlocal error_response
-            response, error = resume_query2(cht_mdl, query)
-            if error is not None:
-                # Convert httpx.Response to a Django compatible response
+            try:
+                response = concurrent.futures.wait_for(
+                    resume_query2(cht_mdl, query), timeout=timeout)
+            except futures.TimeoutError as e:
                 error_response = Response(
-                    {'error': error.response.text}, status=error.response.status_code)
+                    {'error': 'Query processing timed out'}, status=status.HTTP_504_GATEWAY_TIMEOUT)
+                return None
+            except Exception as e:
+                error_response = Response(
+                    {'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 return None
             return {'response': response, 'query': query}
 
         # Use ThreadPoolExecutor to make the for loop parallel
         with ThreadPoolExecutor() as executor:
-            results = list(executor.map(handle_query, queries))
+            future_to_query = {executor.submit(
+                handle_query, query): query for query in queries}
+            for future in concurrent.futures.as_completed(future_to_query):
+                if error_response is not None:
+                    break
+                result = future.result()
+                if result is not None:
+                    responses.append(result)
 
         if error_response is not None:
             return error_response
 
-        responses.extend(filter(None, results))
         return JsonResponse({"responses": responses}, status=status.HTTP_200_OK)
     except Resume.DoesNotExist:
         return Response({'error': 'Resume not found'}, status=status.HTTP_404_NOT_FOUND)
