@@ -210,8 +210,16 @@ def resume_query_view2(request):
             for future in as_completed(futures):
                 result = future.result()  # Apply timeout here if necessary
                 if 'error' in result:
-                    return error_response
+                    break
                 responses.append(result)
+
+        if error_response:
+            print("hell yeah")
+            print(error_response)
+            if (error_response.status_code == 429):
+                return error_response
+            return JsonResponse({"responses": [], "error": "Timeout error"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            # return error_response
         return JsonResponse({"responses": responses}, status=status.HTTP_200_OK)
 
     except Resume.DoesNotExist:
