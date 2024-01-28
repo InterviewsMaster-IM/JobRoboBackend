@@ -191,16 +191,12 @@ def resume_query_view2(request):
         def handle_query(query):
             nonlocal error_response
             try:
-                response = concurrent.futures.wait_for(
-                    resume_query2(cht_mdl, query), timeout=timeout)
-            except futures.TimeoutError as e:
+                response = resume_query2(cht_mdl, query)
+            except concurrent.futures.TimeoutError as e:
                 error_response = Response(
                     {'error': 'Query processing timed out'}, status=status.HTTP_504_GATEWAY_TIMEOUT)
                 return None
-            except Exception as e:
-                error_response = Response(
-                    {'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-                return None
+
             return {'response': response, 'query': query}
 
         # Use ThreadPoolExecutor to make the for loop parallel
@@ -210,7 +206,7 @@ def resume_query_view2(request):
             for future in concurrent.futures.as_completed(future_to_query):
                 if error_response is not None:
                     break
-                result = future.result()
+                result = future.result(timeout=timeout)
                 if result is not None:
                     responses.append(result)
 
