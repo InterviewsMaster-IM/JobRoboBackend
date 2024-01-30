@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/credits/', include('credits.urls')),
     path('api/profiles/', include('profiles.urls')),
     path('api/campaigns/', include('campaigns.urls')),
+    path('', include('landing_pages.urls')),
 ]
 
 schema_view = get_schema_view(
