@@ -145,7 +145,7 @@ LINKEDIN_AUTHORIZATION_URL = 'https://www.linkedin.com/oauth/v2/authorization'
 LINKEDIN_ACCESS_TOKEN_URL = 'https://www.linkedin.com/oauth/v2/accessToken'
 LINKEDIN_CLIENT_ID = '86gvbx55n6beam'
 LINKEDIN_CLIENT_SECRET = 'CbCvcA0eaYQmI1Fz'
-LINKEDIN_REDIRECT_URI = 'http://localhost:8000/authentication/linkedin/callback'
+LINKEDIN_REDIRECT_URI = 'http://jobrobo.ai/authentication/linkedin/callback'
 LINKEDIN_SCOPE = 'openid profile email'  # Modify as per your requirements
 
 
