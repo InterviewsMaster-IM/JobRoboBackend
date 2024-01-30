@@ -149,8 +149,8 @@ LINKEDIN_ACCESS_TOKEN_URL = 'https://www.linkedin.com/oauth/v2/accessToken'
 LINKEDIN_CLIENT_ID = '86gvbx55n6beam'
 LINKEDIN_CLIENT_SECRET = 'CbCvcA0eaYQmI1Fz'
 
-LINKEDIN_REDIRECT_URI = 'http://localhost:8000/authentication/linkedin/callback'
-# LINKEDIN_REDIRECT_URI = 'http://jobrobo.ai/authentication/linkedin/callback'
+# LINKEDIN_REDIRECT_URI = 'http://localhost:8000/authentication/linkedin/callback'
+LINKEDIN_REDIRECT_URI = 'http://jobrobo.ai/authentication/linkedin/callback'
 
 LINKEDIN_SCOPE = 'openid profile email'  # Modify as per your requirements
 
@@ -171,7 +171,8 @@ SIMPLE_JWT = {
 }
 
 # FrontEnd Settings
-TOKEN_HANDLER_URL = "http://localhost:3000/token-handler"
+# TOKEN_HANDLER_URL = "http://localhost:3000/token-handler"
+TOKEN_HANDLER_URL = "http://jobrobo.ai/token-handler"
 
 
 # AWS settings
@@ -206,7 +207,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 # For production, something like this
 # CORS_ALLOWED_ORIGINS = [
-#        "http://localhost:3000",
+#        "http://:3000",
 #    ]
 
 CORS_ALLOW_CREDENTIALS = True

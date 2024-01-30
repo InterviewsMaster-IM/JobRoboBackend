@@ -43,6 +43,8 @@ def resume_upload(request):
     # ... set other fields as needed
     resume.save()
 
+    # parse and save details
+
     # Serialize the resume after saving
     resume_serializer = ResumeSerializer(resume)
     return JsonResponse(resume_serializer.data, status=status.HTTP_201_CREATED)
