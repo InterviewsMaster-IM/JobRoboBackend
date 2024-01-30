@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     "credits",
     "profiles",
     "campaigns",
-    "landing_pages"
+    "landing_pages",
+    "logger"
 ]
 
 MIDDLEWARE = [
