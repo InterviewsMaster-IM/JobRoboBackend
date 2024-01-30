@@ -146,11 +146,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LINKEDIN_AUTHORIZATION_URL = 'https://www.linkedin.com/oauth/v2/authorization'
 LINKEDIN_ACCESS_TOKEN_URL = 'https://www.linkedin.com/oauth/v2/accessToken'
-LINKEDIN_CLIENT_ID = '86gvbx55n6beam'
-LINKEDIN_CLIENT_SECRET = 'CbCvcA0eaYQmI1Fz'
+LINKEDIN_CLIENT_ID = '863a6p76i4gd7m'
+LINKEDIN_CLIENT_SECRET = 'Pduqi9cZw5ieViKO'
 
 # LINKEDIN_REDIRECT_URI = 'http://localhost:8000/authentication/linkedin/callback'
-LINKEDIN_REDIRECT_URI = 'https://jobrobo.ai/authentication/linkedin/callback'
+LINKEDIN_REDIRECT_URI = 'http://jobrobo.ai/authentication/linkedin/callback'
 
 LINKEDIN_SCOPE = 'openid profile email'  # Modify as per your requirements
 
