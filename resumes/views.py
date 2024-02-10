@@ -19,6 +19,7 @@ from langchain_vectordb.utils import create_chat_model_for_resume, get_chat_mode
 
 @api_view(['POST'])
 def resume_upload(request):
+    print(request.headers)
     # Validate the necessary fields
     file = request.data.get('file')
     if not file:
