@@ -157,8 +157,8 @@ LINKEDIN_SCOPE = 'openid profile email'  # Modify as per your requirements
 
 # GOOGLE OAUTH Settings
 
-GOOGLE_CLIENT_ID = '696042053875-cgveufa8e0ug2ktqqqgto16a71d84auo.apps.googleusercontent.com'
-GOOGLE_CLIENT_SECRET = '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'
+GOOGLE_CLIENT_ID = '724831200210-ji9err86cc5ndsetbhmhv5ekkf3gruj7.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET = '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'
 
 GOOGLE_REDIRECT_URI = 'http://jobrobo.ai/authentication/google/callback'
 # GOOGLE_REDIRECT_URI = 'http://localhost:8000/authentication/google/callback'
