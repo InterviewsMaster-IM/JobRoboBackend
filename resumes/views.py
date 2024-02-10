@@ -124,6 +124,7 @@ def delete_coverletter(request, coverletter_id):
 
 @api_view(['GET'])
 def get_uploads(request):
+    print(request.headers)
     try:
         resume = Resume.objects.filter(
             user=request.user).order_by('-created_time')[0]
