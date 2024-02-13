@@ -53,7 +53,9 @@ INSTALLED_APPS = [
     "profiles",
     "campaigns",
     "landing_pages",
-    "logger"
+    "logger",
+    "Jobs"
+
 ]
 
 MIDDLEWARE = [
