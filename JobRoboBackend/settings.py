@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-8=!ds1)(^$*jw645^#j!l+^crzgr-tnn4@oflf(j48u^l@oelz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost",
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "jobrobo.ai", "www.jobrobo.ai",
                  "3.142.79.103", "18.218.180.246", "3.145.41.95"]
 
 
@@ -52,7 +52,10 @@ INSTALLED_APPS = [
     "credits",
     "profiles",
     "campaigns",
+    "landing_pages",
+    "logger",
     "Jobs"
+
 ]
 
 MIDDLEWARE = [
@@ -71,7 +74,7 @@ ROOT_URLCONF = "JobRoboBackend.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR/'landing_pages'/'templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -134,6 +137,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -144,11 +148,26 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LINKEDIN_AUTHORIZATION_URL = 'https://www.linkedin.com/oauth/v2/authorization'
 LINKEDIN_ACCESS_TOKEN_URL = 'https://www.linkedin.com/oauth/v2/accessToken'
-LINKEDIN_CLIENT_ID = '86gvbx55n6beam'
-LINKEDIN_CLIENT_SECRET = 'CbCvcA0eaYQmI1Fz'
-LINKEDIN_REDIRECT_URI = 'http://localhost:8000/authentication/linkedin/callback'
+LINKEDIN_CLIENT_ID = '77lt6h9k4vxtes'
+LINKEDIN_CLIENT_SECRET = 'ndfVcXhLLKIvggEf'
+
+# LINKEDIN_REDIRECT_URI = 'http://localhost:8000/authentication/linkedin/callback'
+LINKEDIN_REDIRECT_URI = 'http://jobrobo.ai/authentication/linkedin/callback'
+
 LINKEDIN_SCOPE = 'openid profile email'  # Modify as per your requirements
 
+
+# GOOGLE OAUTH Settings
+
+GOOGLE_CLIENT_ID = '724831200210-ji9err86cc5ndsetbhmhv5ekkf3gruj7.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET = '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'
+
+GOOGLE_REDIRECT_URI = 'http://jobrobo.ai/authentication/google/callback'
+# GOOGLE_REDIRECT_URI = 'http://localhost:8000/authentication/google/callback'
+
+GOOGLE_AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/auth'
+GOOGLE_ACCESS_TOKEN_URL = 'https://accounts.google.com/o/oauth2/token'
+GOOGLE_SCOPE = 'openid email profile'
 
 # DRF settings
 
@@ -166,7 +185,8 @@ SIMPLE_JWT = {
 }
 
 # FrontEnd Settings
-TOKEN_HANDLER_URL = "http://localhost:3000/token-handler"
+# TOKEN_HANDLER_URL = "http://localhost:3000/token-handler"
+TOKEN_HANDLER_URL = "https://jobrobo.ai/token-handler"
 
 
 # AWS settings
@@ -201,7 +221,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 # For production, something like this
 # CORS_ALLOWED_ORIGINS = [
-#        "http://localhost:3000",
+#        "http://:3000",
 #    ]
 
 CORS_ALLOW_CREDENTIALS = True

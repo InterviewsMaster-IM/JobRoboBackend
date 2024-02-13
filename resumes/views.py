@@ -19,6 +19,7 @@ from langchain_vectordb.utils import create_chat_model_for_resume, get_chat_mode
 
 @api_view(['POST'])
 def resume_upload(request):
+    print(request.headers)
     # Validate the necessary fields
     file = request.data.get('file')
     if not file:
@@ -42,6 +43,8 @@ def resume_upload(request):
     resume.user = request.user  # Assuming you have a user field and the user is logged in
     # ... set other fields as needed
     resume.save()
+
+    # parse and save details
 
     # Serialize the resume after saving
     resume_serializer = ResumeSerializer(resume)
@@ -121,6 +124,7 @@ def delete_coverletter(request, coverletter_id):
 
 @api_view(['GET'])
 def get_uploads(request):
+    print(request.headers)
     try:
         resume = Resume.objects.filter(
             user=request.user).order_by('-created_time')[0]

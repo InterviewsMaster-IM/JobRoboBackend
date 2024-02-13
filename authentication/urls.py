@@ -9,4 +9,7 @@ urlpatterns = [
     # URL pattern for handling the callback from LinkedIn
     path('linkedin/callback/', views.linkedin_callback, name='linkedin_callback'),
 
+
+    path('google/login/', views.google_login, name='google_login'),
+    path('google/callback/', views.google_callback, name='google_callback'),
 ]
