@@ -19,7 +19,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-mongo_client = MongoClient(mongo_uri)
+# mongo_client = MongoClient(mongo_uri)
+mongo_client = MongoClient('mongodb://falcon:c%23eeseP1zza@3.86.98.246/?authMechanism=DEFAULT&authSource=admin')
 db = mongo_client["job_scrapers"]
 
 # Get Latest Profiles {name,url}
