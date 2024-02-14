@@ -159,10 +159,13 @@ LINKEDIN_SCOPE = 'openid profile email'  # Modify as per your requirements
 
 # GOOGLE OAUTH Settings
 
-GOOGLE_CLIENT_ID = '724831200210-ji9err86cc5ndsetbhmhv5ekkf3gruj7.apps.googleusercontent.com'
-GOOGLE_CLIENT_SECRET = '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'
+#GOOGLE_CLIENT_ID = '724831200210-ji9err86cc5ndsetbhmhv5ekkf3gruj7.apps.googleusercontent.com'
+GOOGLE_CLIENT_ID = '239956764777-3bhalmfisn9997ih1jofq6fptpphlrit.apps.googleusercontent.com'
 
-GOOGLE_REDIRECT_URI = 'http://jobrobo.ai/authentication/google/callback'
+#GOOGLE_CLIENT_SECRET = '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'
+GOOGLE_CLIENT_SECRET= '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'
+
+GOOGLE_REDIRECT_URI = 'https://jobrobo.ai/authentication/google/callback'
 # GOOGLE_REDIRECT_URI = 'http://localhost:8000/authentication/google/callback'
 
 GOOGLE_AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/auth'
@@ -202,7 +205,8 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 
 # OPEN API settings
-OPEN_AI_KEY = "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"
+#OPEN_AI_KEY = "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"
+OPEN_AI_KEY = "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"
 OPEN_AI_MODEL = 'gpt-4-1106-preview'
 
 os.environ["OPENAI_API_KEY"] = "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"
