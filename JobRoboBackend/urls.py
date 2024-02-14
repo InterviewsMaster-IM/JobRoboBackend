@@ -20,20 +20,6 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework.permissions import AllowAny
 
-
-urlpatterns = [
-    path("admin/", admin.site.urls),
-    path('authentication/', include('authentication.urls')),
-    path('api/resumes/', include('resumes.urls')),
-    path('api/referrals/', include('referrals.urls')),
-    path('api/credits/', include('credits.urls')),
-    path('api/profiles/', include('profiles.urls')),
-    path('api/campaigns/', include('campaigns.urls')),
-    path('api/logger/', include('logger.urls')),
-    re_path(r'^(?!authentication/|api/resumes/|api/referrals/|api/credits/|api/profiles/|api/campaigns/|api/logger/).*$',
-            include('landing_pages.urls')),
-]
-
 schema_view = get_schema_view(
     openapi.Info(
         title="JobRobo",
@@ -44,9 +30,19 @@ schema_view = get_schema_view(
     permission_classes=(AllowAny,),
 )
 
-urlpatterns += [
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path('authentication/', include('authentication.urls')),
+    path('api/resumes/', include('resumes.urls')),
+    path('api/referrals/', include('referrals.urls')),
+    path('api/credits/', include('credits.urls')),
+    path('api/profiles/', include('profiles.urls')),
+    path('api/campaigns/', include('campaigns.urls')),
+    path('api/logger/', include('logger.urls')),
     path('swagger/', schema_view.with_ui('swagger',
          cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc',
          cache_timeout=0), name='schema-redoc'),
+    re_path(r'^(?!authentication/|api/resumes/|api/referrals/|api/credits/|api/profiles/|api/campaigns/|api/logger/).*$',
+            include('landing_pages.urls')),
 ]
