@@ -87,4 +87,4 @@ async def check_unique(data: dict = Body(...)):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=5002, timeout_keep_alive=180)
+    uvicorn.run(app, host="0.0.0.0", port=8000, timeout_keep_alive=180)
