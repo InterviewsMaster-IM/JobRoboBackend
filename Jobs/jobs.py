@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException, Body
 from typing import List
 from fastapi import Query
 import motor.motor_asyncio
-
+import uvicorn
 
 class Job(BaseModel):
     job_id: Optional[str] = None 
@@ -60,3 +60,7 @@ async def read_jobs(start_date: datetime, end_date: Optional[datetime] = None, j
         query["job_title"] = {"$in": job_titles}
     jobs = await collection.find(query).to_list(None)
     return jobs
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
