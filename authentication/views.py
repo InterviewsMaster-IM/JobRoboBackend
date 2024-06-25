@@ -70,6 +70,7 @@ def google_login(request):
         'include_granted_scopes': 'true'
     }
     url = f'{settings.GOOGLE_AUTHORIZATION_URL}?{urllib.parse.urlencode(params)}'
+    print(url)
     return redirect(url)
 
 
@@ -109,4 +110,5 @@ def google_callback(request):
 
     # Redirect to frontend with tokens
     redirect_url = f"{settings.TOKEN_HANDLER_URL}?access={tokens['access']}&refresh={tokens['refresh']}"
+    print(redirect_url)
     return redirect(redirect_url)

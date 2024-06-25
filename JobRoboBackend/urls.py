@@ -43,6 +43,6 @@ urlpatterns = [
          cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc',
          cache_timeout=0), name='schema-redoc'),
-    re_path(r'^(?!authentication/|api/resumes/|api/referrals/|api/credits/|api/profiles/|api/campaigns/|api/logger/).*$',
+    re_path(r'^(?!authentication/|api/resumes/|api/referrals/|api/credits/|api/profiles/|api/campaigns/|api/logger/).*',
             include('landing_pages.urls')),
 ]
