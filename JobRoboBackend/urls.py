@@ -39,6 +39,7 @@ urlpatterns = [
     path('api/profiles/', include('profiles.urls')),
     path('api/campaigns/', include('campaigns.urls')),
     path('api/logger/', include('logger.urls')),
+    path('api/robos/', include('robos.urls')),
     path('swagger/', schema_view.with_ui('swagger',
          cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc',
