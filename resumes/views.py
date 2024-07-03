@@ -229,3 +229,14 @@ def resume_query_view2(request):
     except Resume.DoesNotExist:
         return Response({'error': 'Resume not found'},
                         status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+def fill_form(request):
+    print("filling form")
+    form_html = request.data['formHTML']
+    # print(form_html)
+    resume = Resume.objects.get(user=request.user)
+    response = resume_query(resume, form_html)
+    # print(response)
+    return Response(response, status=status.HTTP_200_OK)

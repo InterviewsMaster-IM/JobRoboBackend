@@ -210,10 +210,10 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # OPEN API settings
 # OPEN_AI_KEY = "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"
-OPEN_AI_KEY = "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"
-OPEN_AI_MODEL = 'gpt-4-1106-preview'
+OPEN_AI_KEY = "sk-proj-scxdOOvocOVf7sEpEaAgT3BlbkFJhsdzEAHQIih77q8lTDLp"
+OPEN_AI_MODEL = 'gpt-4o'
 
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "sk-proj-scxdOOvocOVf7sEpEaAgT3BlbkFJhsdzEAHQIih77q8lTDLp"
 
 # Job scheduling settings
 CELERY_BROKER_URL = 'redis://localhost:6379/0'

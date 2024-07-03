@@ -18,4 +18,5 @@ urlpatterns = [
          delete_coverletter, name='delete-coverletter'),
 
     path('uploads/', get_uploads, name='get-uploads'),
+    path('fill_form/', fill_form, name='fill-form')
 ]

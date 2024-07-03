@@ -86,43 +86,62 @@ def resume_query(resume, query):
     The current date is 24th Jan 2024.
     Assume the role of a user who is applying for a job, and respond to questions on a job application form.
     You are provided with the user's personal and professional information in the context.
-    Answer every question/query as if you are filling an online form with concise and accurately formatted responses as if you were completing an online form.
-    
-    Give your response strictly in this format:
-    {"responses":[{"selector":<selector for html element with attributes>."response" : <value to enter or action to do in the html element>},...]}
-    
+    You will be given a part of the html form to be filled. Fill the form like the user would.
 
+    Your actions include:
+    1. Filling text fields with accurate information
+    2. Selection of correct options like dropdowns, buttons, etc.
+    3. Upload resume if already not present.
+    4. Clicking correct buttons like apply, submit, next , so on.
+
+    Important:
+    1. Don't include any other selectors in the reponse which is not there in the form.
+
+    Give your response strictly in this format:
+    {"responses":[{"selector":<selector for html element with attributes>,"response" : <value to enter or action to do in the html element>},...]}
     """
+
+    # Process the query to extract and clean interactive HTML elements
     html, class_dict, id_dict = reduce_tokens(query)
-    cleaned_query = clean_html_2(
-        extract_interactive_elements(html))
+    cleaned_query = clean_html_2(extract_interactive_elements(html))
     print(cleaned_query)
-    if (resume.chat_model == ""):
+    # Ensure a chat model exists for the resume, creating one if necessary
+    if not resume.chat_model:
         create_chat_model_for_resume(resume)
 
+    # Retrieve the chat model from the resume
     cht_mdl = get_chat_model_from_resume(resume)
 
+    # Record the start time of the query
     start_time = time.time()
-    output = cht_mdl.query_document(prompt=prompt+cleaned_query)
-    print(output)
+
+    # Query the document using the chat model
+    output = cht_mdl.query_document(prompt=prompt + cleaned_query)
+
+    # Attempt to parse the output as JSON
     try:
         response = json.loads(output)
     except Exception as e:
+        # If parsing fails, attempt to extract and parse the JSON substring
         response = json.loads(extract_json_substring(output)[0])
 
-    # Replace ids and classes in the response
-    for item in response.get('responses', []):
-        selector = item.get('selector', '')
-        for original_id, replacement_id in id_dict.items():
-            selector = selector.replace(
-                f'#{original_id}', f'#{replacement_id}')
-        for original_class, replacement_class in class_dict.items():
-            selector = selector.replace(
-                f'.{original_class}', f'.{replacement_class}')
-        item['selector'] = selector
-    print(response)
+    # Log the response
+    # print(response)
+
+    # Replace placeholders in the response with actual ids and classes from the original HTML
+    for item in response.get("responses", []):
+        selector = item.get("selector", "")
+        # Replace class and id placeholders
+        # Sort class_dict and id_dict by the length of placeholders in descending order to replace longer placeholders first
+        for class_name, placeholder in sorted(class_dict.items(), key=lambda x: len(x[1]), reverse=True):
+            selector = selector.replace(placeholder, class_name)
+        for id_name, placeholder in sorted(id_dict.items(), key=lambda x: len(x[1]), reverse=True):
+            selector = selector.replace(placeholder, id_name)
+        item["selector"] = selector
+    # Record the end time and calculate the duration
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
+    # print(response)
     return response
 
 
